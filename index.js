@@ -3,18 +3,26 @@ const axios = require("axios");
 const cors = require("cors"); // To handle cross-origin requests
 const bodyParser = require("body-parser");
 require("dotenv").config();
+const { verifyAppCheckToken } = require('./firebase');
+
 
 const app = express();
 const port = 8000;
 
-app.use(cors()); // Allow cross-origin requests
+const corsOptions = {
+  origin: '*', // Allow requests from any origin (change this in production for security)
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'X-Firebase-AppCheck'],
+};
+
+app.use(cors(corsOptions)); // Allow cross-origin requests
 app.use(bodyParser.json()); // Parse JSON data
 
 app.get("/", (req, res) => {
   res.send("Hello, World! This is the backend server.");
 });
 
-app.post("/generate_calendar", async (req, res) => {
+app.post("/generate_calendar", verifyAppCheckToken, async (req, res) => {
   // Destructure parameters from the request body
   const { url, platform, from_date, to_date, input_text } = req.body;
   let data = req.body;
