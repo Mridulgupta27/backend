@@ -1,0 +1,33 @@
+app.post("/generate_blog", async (req, res) => {
+  const { topic, tone, word_count, reference_link, custom_keywords } = req.body;
+  let data = req.body;
+  console.log(req.body, "Params");
+  console.log({ topic, tone, word_count, reference_link, custom_keywords });
+
+  let config = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: `https://ai-blog-writer-api-357644217967.us-central1.run.app/generate_blog`,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: {
+      // Use params instead of embedding in URL
+      topic,
+      tone,
+      word_count,
+      reference_link,
+      custom_keywords,
+    },
+    data: data,
+  };
+  try {
+    const response = await axios.request(config);
+    console.log(response.data);
+    res.json(response.data); // Send the generated data back to the frontend
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error generating blog data" });
+  }
+
+});
